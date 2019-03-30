@@ -1,203 +1,162 @@
 <?php
 
-/*
- Plugin Name: Bring Back Toolkit
- Plugin URI: #
- Description: This is a post type plugin and its only for bring back wordpress theme.
- Author Name: Themetim
- Author URI: https://www.themetim.com
- Text Domain: bring-back-toolkit
- Version: 1.0
- */
+ /**
+  * The plugin bootstrap file
+ 
+  * @link                  https://www.themetim.com
+  * @since                 1.0.0
+  * @package               
+  *
+  * @wordpress-plugin
+  *
+  *
+  * Plugin Name:           Bring Back Toolkit
+  * Plugin URI:            https://www.themetim.com/plugin-name-uri/
+  * Description:           
+  * Plugin URI:            https://wpdevelopers.net/plugin_name/
+  * Author:                 Themetim
+  * Author URI:             https://www.themetim.com/
+  * Version:                1.0.0
+  * Author URI:             https://wpdeveloper.net/
+  * License:                GPL-2.0+
+  * License URI:            http://www.gnu.org/licenses/gpl-2.0.txt
+  * Text Domain:            bring-back-toolkit
+  * Domain Path:            /languages
+  */
+ 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-defined( 'ABSPATH' ) or die( 'Hey! what you need here?' );
 
-// Plugin Path
-define( 'BRING_BACK_TOOLKIT_PATH', plugin_dir_path( __FILE__ ) );
-// Plugin Version
-define( 'BRING_BACK_TOOLKIT_VERSION', '1.0' );
-
-/**
- * Class BringBackToolkit
- * @pakage bring-back-toolkit
- */
-class BringBackToolkit
-{
-
-    /**
-     * BringBackToolkit constructor.
-     */
-    function __construct() {
-        //Init Custom Post Types
-        add_action( 'init', array( $this, 'custom_post_types' ) );
-    }
+if( ! class_exists('BringBackToolkit') ) {
 
     /**
-     * Activation
+     * Class BringBackToolkit
+     * @pakage bring-back-toolkit
      */
-    function activate() {
-
-        $this->custom_post_types();
-
-        // clear the permalinks after the post type has been registered
-        flush_rewrite_rules();
-    }
-
-    /**
-     * Deactivation
-     */
-    function deactivate() {
-        // clear the permalinks to remove our post type's rules from the database
-        flush_rewrite_rules();
-    }
-
-    /**
-     * Uninstall
-     */
-    function uninstall() {}
-
-    /**
-     * Custom Post Types
-     *
-     * Testimonial
-     * Case Studies
-     * Services
-     */
-    function custom_post_types() {
-
-        $this->testimonial();
-        $this->case_studies();
-        $this->services();
-
-    }
-
-    /**
-     * Testimonial
-     */
-    function testimonial(){
+    class BringBackToolkit
+    {
         /**
-         * Testimonial
-         * Label
-         * Args
+         * Instance of this class
+         * 
+         * @access protected
          */
-        $testimonial = 'Testimonial';
-        $TestimonialLabel = array(
-            'name'               => _x( $testimonial, 'post type general name', 'bring-back-toolkit' ),
-            'singular_name'      => _x( $testimonial, 'post type singular name', 'bring-back-toolkit' ),
-            'menu_name'          => _x( $testimonial, 'admin menu', 'bring-back-toolkit' ),
-            'name_admin_bar'     => _x( $testimonial, 'add new on admin bar', 'bring-back-toolkit' ),
-            'add_new'            => _x( 'Add New', $testimonial, 'bring-back-toolkit' ),
-            'add_new_item'       => __( 'Add New '.$testimonial, 'bring-back-toolkit' ),
-            'new_item'           => __( 'New '.$testimonial, 'bring-back-toolkit' ),
-            'edit_item'          => __( 'Edit '.$testimonial, 'bring-back-toolkit' ),
-            'view_item'          => __( 'View '.$testimonial, 'bring-back-toolkit' ),
-            'all_items'          => __( 'All '.$testimonial, 'bring-back-toolkit' )
-        );
-        $TestimoniaArgs = array(
-            'labels'             => $TestimonialLabel,
-            'public'             => true,
-            'publicly_queryable' => true,
-            'supports'           => array( 'title', 'editor', 'author', 'thumbnail'  )
-        );
+        protected static $_instance = null;
 
         /**
-         * Register the "Testimonial"
+         * Get instance of this class
+         * 
+         * @return Global_Woo_Gallery
          */
+        public static function get_instance() {
+            if ( is_null( self::$_instance ) ) {
+                self::$_instance = new self();
+            }
+            
+            return self::$_instance;
+        }
 
-        register_post_type( 'testimonial', $TestimoniaArgs );
+        /**
+         * Version of this plugin.
+         * 
+         * @access private string
+         */
+        private $version = '1.0.0';
+
+        /**
+         * BringBackToolkit constructor.
+         */
+        public function __construct() {
+            $this->define_constants();
+            add_action( 'init', array( $this, 'register_post_types' ) );
+        }
+
+        public function define( $name, $value, $case_insensitive = false ) {
+            if ( ! defined( $name ) ) {
+                define( $name, $value, $case_insensitive );
+            }
+        }
+
+        public function define_constants() {
+            $this->define( 'BRINGBACK_PLUGIN_FILE', __FILE__ );
+            $this->define( 'BRINGBACK_PLUGIN_URI', plugin_dir_url( __FILE__ ) );
+            $this->define( 'BRINGBACK_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
+            $this->define( 'BRINGBACK_VERSION', $this->version );
+            $this->define( 'BRINGBACK_PLUGIN_INCLUDE_PATH', trailingslashit( plugin_dir_path( __FILE__ ) . 'includes' ) );
+            $this->define( 'BRINGBACK_PLUGIN_DIRNAME', dirname( plugin_basename( __FILE__ ) ) );
+            $this->define( 'BRINGBACK_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+        }
+
+        /**
+         * Available post types
+         * 
+         * @access protected
+         * @return array
+         */
+        protected function post_types() {
+            return [
+                [
+                    'post_type' => 'bb-testimonials',
+                    'name'      => __( 'Testimonials', '' ),
+                    'label'     => __( 'Testimonial', '' ),
+                    'supports'  => [ 'title', 'editor', 'author', 'thumbnail' ]
+                ],
+                [
+                    'post_type' => 'bb-services',
+                    'name'      => __( 'Services', '' ),
+                    'label'     => __( 'Service', '' ),
+                    'supports'  => [ 'title', 'editor', 'author', 'thumbnail' ]
+                ],
+                [
+                    'post_type' => 'bb-case-studies',
+                    'name'      => __( 'Case Studies', '' ),
+                    'label'     => __( 'Case Studies', '' ),
+                    'supports'  => [ 'title', 'editor', 'author', 'thumbnail' ]
+                ],
+            ];
+        }
+
+        /**
+         * Registering post types
+         * 
+         * @return voids
+         */
+        public function register_post_types() {
+            foreach($this->post_types() as $post) {
+                extract($post);
+
+                    if($post_type) {
+                        $labels = [
+                        'name'               => _x( $name, 'post type general name', 'bring-back-toolkit' ),
+                        'singular_name'      => _x( $label, 'post type singular name', 'bring-back-toolkit' ),
+                        'menu_name'          => _x( $label, 'admin menu', 'bring-back-toolkit' ),
+                        'name_admin_bar'     => _x( $label, 'add new on admin bar', 'bring-back-toolkit' ),
+                        'add_new'            => _x( 'Add New', $label, 'bring-back-toolkit' ),
+                        'add_new_item'       => __( 'Add New '.$label, 'bring-back-toolkit' ),
+                        'new_item'           => __( 'New '.$label, 'bring-back-toolkit' ),
+                        'edit_item'          => __( 'Edit '.$label, 'bring-back-toolkit' ),
+                        'view_item'          => __( 'View '.$label, 'bring-back-toolkit' ),
+                        'all_items'          => __( 'All '.$label, 'bring-back-toolkit' )
+                    ];
+                    $args = [
+                        'labels'             => $labels,
+                        'public'             => true,
+                        'publicly_queryable' => true,
+                        'supports'           => $supports
+                    ];
+
+                    register_post_type($post_type, $args );
+                }
+
+            }
+        }
+
     }
 
-    /**
-     * Case Studies
-     */
-    function case_studies(){
-        /**
-         * Case Studies
-         * Label
-         * Args
-         */
-
-        $CaseStudies = 'Case Studies';
-        $CaseStudiesLabel = array(
-            'name'               => _x( $CaseStudies, 'post type general name', 'bring-back-toolkit' ),
-            'singular_name'      => _x( $CaseStudies, 'post type singular name', 'bring-back-toolkit' ),
-            'menu_name'          => _x( $CaseStudies, 'admin menu', 'bring-back-toolkit' ),
-            'name_admin_bar'     => _x( $CaseStudies, 'add new on admin bar', 'bring-back-toolkit' ),
-            'add_new'            => _x( 'Add New', $CaseStudies, 'bring-back-toolkit' ),
-            'add_new_item'       => __( 'Add New '.$CaseStudies, 'bring-back-toolkit' ),
-            'new_item'           => __( 'New '.$CaseStudies, 'bring-back-toolkit' ),
-            'edit_item'          => __( 'Edit '.$CaseStudies, 'bring-back-toolkit' ),
-            'view_item'          => __( 'View '.$CaseStudies, 'bring-back-toolkit' ),
-            'all_items'          => __( 'All '.$CaseStudies, 'bring-back-toolkit' )
-        );
-        $CaseStudiesArgs = array(
-            'labels'             => $CaseStudiesLabel,
-            'public'             => true,
-            'publicly_queryable' => true,
-            'rewrite'            => array( 'slug' => 'case-studies' ),
-            'supports'           => array( 'title', 'editor', 'author', 'thumbnail'  )
-        );
-
-        /**
-         * Register the "Case Studies"
-         */
-
-        register_post_type( 'case_studies', $CaseStudiesArgs );
-
-    }
-
-    /**
-     * Services
-     */
-    function services(){
-        /**
-         * Services
-         * Label
-         * Args
-         */
-
-        $Services = 'Services';
-        $ServicesLabel = array(
-            'name'               => _x( $Services, 'post type general name', 'bring-back-toolkit' ),
-            'singular_name'      => _x( $Services, 'post type singular name', 'bring-back-toolkit' ),
-            'menu_name'          => _x( $Services, 'admin menu', 'bring-back-toolkit' ),
-            'name_admin_bar'     => _x( $Services, 'add new on admin bar', 'bring-back-toolkit' ),
-            'add_new'            => _x( 'Add New', $Services, 'bring-back-toolkit' ),
-            'add_new_item'       => __( 'Add New '.$Services, 'bring-back-toolkit' ),
-            'new_item'           => __( 'New '.$Services, 'bring-back-toolkit' ),
-            'edit_item'          => __( 'Edit '.$Services, 'bring-back-toolkit' ),
-            'view_item'          => __( 'View '.$Services, 'bring-back-toolkit' ),
-            'all_items'          => __( 'All '.$Services, 'bring-back-toolkit' )
-        );
-        $ServicesArgs = array(
-            'labels'             => $ServicesLabel,
-            'public'             => true,
-            'publicly_queryable' => true,
-            'rewrite'            => array( 'slug' => 'services' ),
-            'supports'           => array( 'title', 'editor', 'author', 'thumbnail'  )
-        );
-
-        /**
-         * Register the "Services"
-         */
-
-        register_post_type( 'services', $ServicesArgs );
-    }
 }
 
-/**
- * New Object $bringBackToolkit
- */
-if( class_exists( 'BringBackToolkit' ) ){
-    $bringBackToolkit = new BringBackToolkit();
+if( ! function_exists('run_bringback_toolkit') ) {
+    function run_bringback_toolkit() {
+        BringBackToolkit::get_instance();
+    }
+    add_action( 'plugins_loaded', 'run_bringback_toolkit' );
 }
-
-/**
- * Register Activation Hook
- */
-register_activation_hook( BRING_BACK_TOOLKIT_PATH, array( $bringBackToolkit, 'activate' ) );
-
-/**
- * Register Deactivation Hook
- */
-register_deactivation_hook( BRING_BACK_TOOLKIT_PATH, array( $bringBackToolkit, 'deactivate' ) );
