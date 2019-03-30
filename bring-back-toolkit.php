@@ -151,7 +151,6 @@ if( ! class_exists('BringBackToolkit') ) {
         }
 
     }
-
 }
 
 if( ! function_exists('run_bringback_toolkit') ) {
