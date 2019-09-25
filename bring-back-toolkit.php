@@ -1,5 +1,4 @@
 <?php
-
 /**
  *
  * @link                  https://www.themetim.com
@@ -12,11 +11,11 @@
  * Plugin Name:           Bring Back Toolkit
  * Plugin URI:            https://www.themetim.com/plugin-name-uri/
  * Description:
- * Plugin URI:            https://wpdevelopers.net/plugin_name/
+ * Plugin URI:            https://www.themetim.com/plugin_name/
  * Author:                Themetim
  * Author URI:            https://www.themetim.com/
  * Version:               1.0.0
- * Author URI:            https://wpdeveloper.net/
+ * Author URI:            https://www.themetim.com/
  * License:               GPL-2.0+
  * License URI:           http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:           bring-back-toolkit
@@ -26,13 +25,13 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 
-if( ! class_exists('BringBackToolkit') ) {
+if( ! class_exists('Bring_Back_Toolkit') ) {
 
     /**
-     * Class BringBackToolkit
+     * Class Bring_Back_Toolkit
      * @pakage bring-back-toolkit
      */
-    class BringBackToolkit
+    class Bring_Back_Toolkit
     {
         /**
          * Instance of this class
@@ -44,9 +43,10 @@ if( ! class_exists('BringBackToolkit') ) {
         /**
          * Get instance of this class
          *
-         * @return BringBackToolkit|null
+         * @return Bring_Back_Toolkit|null
          */
         public static function get_instance() {
+
             if ( is_null( self::$_instance ) ) {
                 self::$_instance = new self();
             }
@@ -62,13 +62,13 @@ if( ! class_exists('BringBackToolkit') ) {
         private $version = '1.0.0';
 
         /**
-         * BringBackToolkit constructor.
+         * Bring_Back_Toolkit constructor.
          */
         public function __construct() {
             $this->define_constants();
             // Post Type Init
             add_action( 'init', array( $this, 'register_post_types' ) );
-
+            // Meta Box
             add_action('save_post', array( $this, 'case_studies_save_metabox' ) );
         }
 
@@ -89,13 +89,13 @@ if( ! class_exists('BringBackToolkit') ) {
          * @access Public
          */
         public function define_constants() {
-            $this->define( 'BRINGBACKTOOLKIT_PLUGIN_FILE', __FILE__ );
-            $this->define( 'BRINGBACKTOOLKIT_PLUGIN_URI', plugin_dir_url( __FILE__ ) );
-            $this->define( 'BRINGBACKTOOLKIT_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
-            $this->define( 'BRINGBACKTOOLKIT_VERSION', $this->version );
-            $this->define( 'BRINGBACKTOOLKIT_PLUGIN_INCLUDE_PATH', trailingslashit( plugin_dir_path( __FILE__ ) . 'includes' ) );
-            $this->define( 'BRINGBACKTOOLKIT_PLUGIN_DIRNAME', dirname( plugin_basename( __FILE__ ) ) );
-            $this->define( 'BRINGBACKTOOLKIT_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+            $this->define( 'Bring_Back_Toolkit_PLUGIN_FILE', __FILE__ );
+            $this->define( 'Bring_Back_Toolkit_PLUGIN_URI', plugin_dir_url( __FILE__ ) );
+            $this->define( 'Bring_Back_Toolkit_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
+            $this->define( 'Bring_Back_Toolkit_VERSION', $this->version );
+            $this->define( 'Bring_Back_Toolkit_PLUGIN_INCLUDE_PATH', trailingslashit( plugin_dir_path( __FILE__ ) . 'includes' ) );
+            $this->define( 'Bring_Back_Toolkit_PLUGIN_DIRNAME', dirname( plugin_basename( __FILE__ ) ) );
+            $this->define( 'Bring_Back_Toolkit_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
         }
 
         /**
@@ -108,22 +108,22 @@ if( ! class_exists('BringBackToolkit') ) {
             return [
                 [
                     'post_type' => 'bb-testimonials',
-                    'name'      => __( 'Testimonials', '' ),
-                    'label'     => __( 'Testimonial', '' ),
+                    'name'      => __( 'Testimonials', 'bring-back-toolkit' ),
+                    'label'     => __( 'Testimonial', 'bring-back-toolkit' ),
                     'supports'  => [ 'title', 'editor', 'author', 'thumbnail' ],
                     'register_meta_box_cb'  => []
                 ],
                 [
                     'post_type' => 'bb-services',
-                    'name'      => __( 'Services', '' ),
-                    'label'     => __( 'Service', '' ),
+                    'name'      => __( 'Services', 'bring-back-toolkit' ),
+                    'label'     => __( 'Service', 'bring-back-toolkit' ),
                     'supports'  => [ 'title', 'editor', 'author', 'thumbnail' ],
                     'register_meta_box_cb'  => []
                 ],
                 [
                     'post_type' => 'bb-case-studies',
-                    'name'      => __( 'Case Studies', '' ),
-                    'label'     => __( 'Case Studies', '' ),
+                    'name'      => __( 'Case Studies', 'bring-back-toolkit' ),
+                    'label'     => __( 'Case Studies', 'bring-back-toolkit' ),
                     'supports'  => [ 'title', 'editor', 'author', 'thumbnail' ],
                     'register_meta_box_cb'  => [ $this, 'bb_case_studies_add_metabox' ]
                 ],
@@ -134,15 +134,16 @@ if( ! class_exists('BringBackToolkit') ) {
          * Registering post types
          */
         public function register_post_types() {
-            foreach($this->post_types() as $post) {
 
-                extract($post);
+            foreach( $this->post_types() as $post ) {
+
+                extract( $post );
 
 //                echo "<pre>";
 //                var_dump( $post );
 //                die();
 
-                if($post_type) {
+                if( $post_type ) {
                     $labels = [
                         'name'               => _x( $name, 'post type general name', 'bring-back-toolkit' ),
                         'singular_name'      => _x( $label, 'post type singular name', 'bring-back-toolkit' ),
@@ -163,7 +164,7 @@ if( ! class_exists('BringBackToolkit') ) {
                         'register_meta_box_cb'  => $register_meta_box_cb
                     ];
 
-                    register_post_type($post_type, $args );
+                    register_post_type( $post_type, $args );
                 }
             }
         }
@@ -177,7 +178,7 @@ if( ! class_exists('BringBackToolkit') ) {
         public function bb_case_studies_add_metabox() {
             add_meta_box(
                 'bb-case-studies-meta-box',
-                __( 'Case Studies', '' ),
+                __( 'Case Studies', 'bring-back-toolkit' ),
                 [ $this, 'case_studies_metabox_callback' ],
                 'bb-case-studies',
                 'advanced',
@@ -213,7 +214,7 @@ if( ! class_exists('BringBackToolkit') ) {
         }
 
         /**
-         * Case Studies Meta fileds
+         * Case Studies Meta fields
          *
          * @access Public
          * @return array
@@ -290,7 +291,7 @@ if( ! class_exists('BringBackToolkit') ) {
 
                     update_post_meta( $post_id, $mbFields['name'], $new_key );
 
-                } elseif ('' == $new_key && $old_key) {
+                } elseif ( '' == $new_key && $old_key ) {
 
                     delete_post_meta( $post_id, $mbFields['name'], $old_key );
 
@@ -301,10 +302,11 @@ if( ! class_exists('BringBackToolkit') ) {
     }
 }
 
-if( ! function_exists('run_bringback_toolkit') ) {
-    function run_bringback_toolkit() {
-        BringBackToolkit::get_instance();
+if( ! function_exists('run_bring_back_toolkit') ) {
+
+    function run_bring_back_toolkit() {
+        Bring_Back_Toolkit::get_instance();
     }
 
-    add_action( 'plugins_loaded', 'run_bringback_toolkit' );
+    add_action( 'plugins_loaded', 'run_bring_back_toolkit' );
 }
