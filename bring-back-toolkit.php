@@ -70,7 +70,7 @@ if( ! class_exists('Bring_Back_Toolkit') ) {
             // Meta Box
             add_action('save_post', array( $this, 'case_studies_save_metabox' ) );
             // Social Share
-            add_action('init', array( $this,'social_share_init' ) );
+            add_shortcode('bb_social_share_shortcode', array($this, 'bb_social_share') );
         }
 
         /**
@@ -316,30 +316,27 @@ if( ! class_exists('Bring_Back_Toolkit') ) {
          * Social Share shortcode init
          * Register the Shortcode
          */
-        public function social_share_init(){
+        public function bb_social_share( $atts = [], $content = null ){
 
+            echo '<ul class="list-unstyled social-links">';
+            foreach ( $this->social_share_type() as $social_type ){
 
-            function bb_social_share( $atts = [], $content = null ){
-                echo '<ul class="list-unstyled social-links">';
-                foreach ( $this->social_share_type() as $social_type ){
+                extract( $social_type );
 
-                    extract( $social_type );
+                if( $social_type ) {
 
-                    if( $social_type ) {
+                    echo '<li class="list-inline-item"><a target="_blank" href="'. $social_type['href'] .'" class="'.$social_type['class'].'"><i class="icofont-'.$social_type['name'].'"></i></a></li>';
 
-                        echo '<li class="list-inline-item"><a target="_blank" href="'. $social_type['href'] .'" class="'.$social_type['class'].'"><i class="icofont-'.$social_type['name'].'"></i></a></li>';
-
-                    }
                 }
-                echo '</ul>';
-                echo '</ul>';
+            }
+            echo '</ul>';
+            echo '</ul>';
 
-               return $content;
-           }
+            return $content;
 
-           // Register the Shortcode
-           add_shortcode('bb_social_share_shortcode', 'bb_social_share');
         }
+
+        // Register the Shortcode
 
         /**
          * Social share type
