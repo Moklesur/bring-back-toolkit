@@ -9,9 +9,9 @@
  *
  *
  * Plugin Name:           Bring Back Toolkit
- * Plugin URI:            https://www.themetim.com/plugin-name-uri/
- * Description:
- * Plugin URI:            https://www.themetim.com/plugin_name/
+ * Plugin URI:            #
+ * Description:           Bring Back Toolkit
+ * Plugin URI:            #
  * Author:                Themetim
  * Author URI:            https://www.themetim.com/
  * Version:               1.0.0
@@ -19,7 +19,6 @@
  * License:               GPL-2.0+
  * License URI:           http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:           bring-back-toolkit
- * Domain Path:           /languages
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -70,6 +69,8 @@ if( ! class_exists('Bring_Back_Toolkit') ) {
             add_action( 'init', array( $this, 'register_post_types' ) );
             // Meta Box
             add_action('save_post', array( $this, 'case_studies_save_metabox' ) );
+            // Social Share
+            add_action('init', array( $this,'social_share_init' ) );
         }
 
         /**
@@ -93,7 +94,7 @@ if( ! class_exists('Bring_Back_Toolkit') ) {
             $this->define( 'Bring_Back_Toolkit_PLUGIN_URI', plugin_dir_url( __FILE__ ) );
             $this->define( 'Bring_Back_Toolkit_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
             $this->define( 'Bring_Back_Toolkit_VERSION', $this->version );
-            $this->define( 'Bring_Back_Toolkit_PLUGIN_INCLUDE_PATH', trailingslashit( plugin_dir_path( __FILE__ ) . 'includes' ) );
+            //$this->define( 'Bring_Back_Toolkit_PLUGIN_INCLUDE_PATH', trailingslashit( plugin_dir_path( __FILE__ ) . 'includes' ) );
             $this->define( 'Bring_Back_Toolkit_PLUGIN_DIRNAME', dirname( plugin_basename( __FILE__ ) ) );
             $this->define( 'Bring_Back_Toolkit_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
         }
@@ -131,6 +132,13 @@ if( ! class_exists('Bring_Back_Toolkit') ) {
         }
 
         /**
+         * Permalink Flush
+         */
+        public function permalink_flush() {
+            flush_rewrite_rules();
+        }
+
+        /**
          * Registering post types
          */
         public function register_post_types() {
@@ -163,6 +171,9 @@ if( ! class_exists('Bring_Back_Toolkit') ) {
                         'supports'              => $supports,
                         'register_meta_box_cb'  => $register_meta_box_cb
                     ];
+
+                    // Permalink Flush
+                    $this->permalink_flush();
 
                     register_post_type( $post_type, $args );
                 }
@@ -297,6 +308,60 @@ if( ! class_exists('Bring_Back_Toolkit') ) {
 
                 }
             }
+        }
+
+        /**
+         * social_share_init
+         *
+         * Social Share shortcode init
+         * Register the Shortcode
+         */
+        public function social_share_init(){
+
+
+            function bb_social_share( $atts = [], $content = null ){
+                echo '<ul class="list-unstyled social-links">';
+                foreach ( $this->social_share_type() as $social_type ){
+
+                    extract( $social_type );
+
+                    if( $social_type ) {
+
+                        echo '<li class="list-inline-item"><a target="_blank" href="'. $social_type['href'] .'" class="'.$social_type['class'].'"><i class="icofont-'.$social_type['name'].'"></i></a></li>';
+
+                    }
+                }
+                echo '</ul>';
+                echo '</ul>';
+
+               return $content;
+           }
+
+           // Register the Shortcode
+           add_shortcode('bb_social_share_shortcode', 'bb_social_share');
+        }
+
+        /**
+         * Social share type
+         */
+        public function social_share_type(){
+            return [
+                [
+                    'name' => 'facebook',
+                    'href' => 'https://www.facebook.com/sharer/sharer.php?u='.esc_url( get_the_permalink() ),
+                    'class' => 'fb'
+                ],
+                [
+                    'name' => 'twitter',
+                    'href' => 'https://twitter.com/home?status='.esc_url( get_the_permalink() ),
+                    'class' => 'tw'
+                ],
+                [
+                    'name' => 'linkedin',
+                    'href' => 'https://www.linkedin.com/shareArticle?mini=true&url='.esc_url( get_the_permalink() ),
+                    'class' => 'lin'
+                ]
+            ];
         }
 
     }
