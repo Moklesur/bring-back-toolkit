@@ -70,7 +70,7 @@ if( ! class_exists('Bring_Back_Toolkit') ) {
             // Meta Box
             add_action('save_post', array( $this, 'case_studies_save_metabox' ) );
             // Social Share
-            add_shortcode('bb_social_share_shortcode', array($this, 'bb_social_share') );
+            add_filter( 'the_content', array( $this, 'bb_social_share' ) );
         }
 
         /**
@@ -147,10 +147,6 @@ if( ! class_exists('Bring_Back_Toolkit') ) {
 
                 extract( $post );
 
-//                echo "<pre>";
-//                var_dump( $post );
-//                die();
-
                 if( $post_type ) {
                     $labels = [
                         'name'               => _x( $name, 'post type general name', 'bring-back-toolkit' ),
@@ -169,6 +165,7 @@ if( ! class_exists('Bring_Back_Toolkit') ) {
                         'public'                => true,
                         'publicly_queryable'    => true,
                         'supports'              => $supports,
+                        //'taxonomies'  => array( 'category' ),
                         'register_meta_box_cb'  => $register_meta_box_cb
                     ];
 
@@ -311,32 +308,32 @@ if( ! class_exists('Bring_Back_Toolkit') ) {
         }
 
         /**
-         * social_share_init
+         * bb_social_share
          *
-         * Social Share shortcode init
-         * Register the Shortcode
+         * Social Share after content
          */
-        public function bb_social_share( $atts = [], $content = null ){
+        public function bb_social_share( $content ){
 
-            echo '<ul class="list-unstyled social-links">';
-            foreach ( $this->social_share_type() as $social_type ){
+            if ( is_singular( 'bb-case-studies' ) ) {
 
-                extract( $social_type );
+                $content .= '<div class="clearfix"></div><!-- .social-share-tags start --><div class="social-share-tags overflow-hidden align-items-lg-center d-lg-flex"><div class="ml-lg-auto social-share-fix"><ul class="list-unstyled social-links">';
 
-                if( $social_type ) {
+                foreach ( $this->social_share_type() as $social_type ){
 
-                    echo '<li class="list-inline-item"><a target="_blank" href="'. $social_type['href'] .'" class="'.$social_type['class'].'"><i class="icofont-'.$social_type['name'].'"></i></a></li>';
+                    extract( $social_type );
+
+                    if( $social_type ) {
+                        $content .= '<li class="list-inline-item"><a target="_blank" href="'. $social_type['href'] .'" class="'.$social_type['class'].'"><i class="icofont-'.$social_type['name'].'"></i></a></li>';
+                    }
 
                 }
-            }
-            echo '</ul>';
-            echo '</ul>';
 
-            return $content;
+                $content .= '</ul></div></div><!-- .social-share-tags end -->';
+
+                return $content;
+            }
 
         }
-
-        // Register the Shortcode
 
         /**
          * Social share type
