@@ -330,9 +330,9 @@ if( ! class_exists('Bring_Back_Toolkit') ) {
 
                 $content .= '</ul></div></div><!-- .social-share-tags end -->';
 
-                return $content;
             }
 
+            return $content;
         }
 
         /**
