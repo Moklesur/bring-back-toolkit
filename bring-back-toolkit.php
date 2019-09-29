@@ -108,13 +108,6 @@ if( ! class_exists('Bring_Back_Toolkit') ) {
         protected function post_types() {
             return [
                 [
-                    'post_type' => 'bb-testimonials',
-                    'name'      => __( 'Testimonials', 'bring-back-toolkit' ),
-                    'label'     => __( 'Testimonial', 'bring-back-toolkit' ),
-                    'supports'  => [ 'title', 'editor', 'author', 'thumbnail' ],
-                    'register_meta_box_cb'  => []
-                ],
-                [
                     'post_type' => 'bb-services',
                     'name'      => __( 'Services', 'bring-back-toolkit' ),
                     'label'     => __( 'Service', 'bring-back-toolkit' ),
