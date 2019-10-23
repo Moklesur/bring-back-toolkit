@@ -73,6 +73,8 @@ if( ! class_exists('Bring_Back_Toolkit') ) {
             add_filter( 'the_content', array( $this, 'bb_social_share' ) );
             // Breadcrumbs
             add_shortcode( 'bb_breadcrumbs', array( $this, 'bring_back_breadcrumbs' ) );
+            // Folder Path
+            //add_action( 'init', array( $this, 'folderPath' ) );
         }
 
         /**
@@ -99,6 +101,13 @@ if( ! class_exists('Bring_Back_Toolkit') ) {
             $this->define( 'Bring_Back_Toolkit_PLUGIN_INCLUDE_PATH', trailingslashit( plugin_dir_path( __FILE__ ) . 'includes' ) );
             $this->define( 'Bring_Back_Toolkit_PLUGIN_DIRNAME', dirname( plugin_basename( __FILE__ ) ) );
             $this->define( 'Bring_Back_Toolkit_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+        }
+
+        /**
+         * Folder Path
+         */
+        public function folderPath(){
+            //require_once Bring_Back_Toolkit_PLUGIN_INCLUDE_PATH.'breadcrumbs.php';
         }
 
         /**
@@ -381,6 +390,7 @@ if( ! class_exists('Bring_Back_Toolkit') ) {
             $title = '<h1 class="page-title">'.get_the_title().'</h1>';
 
             // Add Homepage link & separator (always present)
+
             $home = '<span class="item-home"><a class="bread-link bread-home" href="' . esc_url(get_home_url()) . '" title="' . esc_attr( $args['home_title'] ) . '">' .  esc_html($args['home_title']) . '</a></span>';
 
             // Post
@@ -391,7 +401,7 @@ if( ! class_exists('Bring_Back_Toolkit') ) {
                 $last_category = end( $category_values );
                 $cat_parents = rtrim( get_category_parents( $last_category->term_id, true, ',' ), ',' );
                 $cat_parents = explode( ',', $cat_parents );
-                $html .= $title;
+                $html .= '<h1 class="page-title">'.esc_html( get_the_title() ).'</h1>';
                 $html .= $home;
                 foreach ( $cat_parents as $parent ) {
                     $html .= '<span class="item-cat">' . wp_kses( $parent, wp_kses_allowed_html( 'a' ) ) . '</span>';
@@ -480,6 +490,7 @@ if( ! class_exists('Bring_Back_Toolkit') ) {
                 $html .= $home;
                 $html .= '<span>' . __( 'Error 404', 'bring-back' ) . '</span>';
             } elseif ( is_home() ) {
+                $html .= '<h1 class="page-title">'.esc_html( 'Blog' ).'</h1>';
                 $html .= $home;
                 $html .= '<span>' . esc_html( get_the_title( get_option( 'page_for_posts' ) ) ) . '</span>';
             }
